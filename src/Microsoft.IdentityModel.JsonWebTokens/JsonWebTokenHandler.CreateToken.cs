@@ -1365,7 +1365,7 @@ namespace Microsoft.IdentityModel.JsonWebTokens
                         jwtToken.TryGetHeaderValue(JwtHeaderParameterNames.Apu, out string apu);
                         jwtToken.TryGetHeaderValue(JwtHeaderParameterNames.Apv, out string apv);
                         SecurityKey kdf = ecdhKeyExchangeProvider.GenerateKdf(apu, apv);
-                        var kwp = key.CryptoProviderFactory.CreateKeyWrapProviderForUnwrap(kdf, ecdhKeyExchangeProvider.GetEncryptionAlgorithm());
+                        using var kwp = key.CryptoProviderFactory.CreateKeyWrapProviderForUnwrap(kdf, ecdhKeyExchangeProvider.GetEncryptionAlgorithm());
                         var unwrappedKey = kwp.UnwrapKey(Base64UrlEncoder.DecodeBytes(jwtToken.EncryptedKey));
                         unwrappedKeys.Add(new SymmetricSecurityKey(unwrappedKey));
                     }
@@ -1373,7 +1373,7 @@ namespace Microsoft.IdentityModel.JsonWebTokens
 #endif
                     if (key.CryptoProviderFactory.IsSupportedAlgorithm(jwtToken.Alg, key))
                     {
-                        var kwp = key.CryptoProviderFactory.CreateKeyWrapProviderForUnwrap(key, jwtToken.Alg);
+                        using var kwp = key.CryptoProviderFactory.CreateKeyWrapProviderForUnwrap(key, jwtToken.Alg);
                         var unwrappedKey = kwp.UnwrapKey(jwtToken.EncryptedKeyBytes);
                         unwrappedKeys.Add(new SymmetricSecurityKey(unwrappedKey));
                     }
